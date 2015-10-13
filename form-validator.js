@@ -10,7 +10,7 @@
 				validations : [], // Custom validations, array of field objects
 				result : emptyFunction, // Function to call on every validate event with the errors array passed as first argument. Defaults to empty function.
 				types : { // Object with custom types and its custom regex to match on every field
-					email : /^([a-z0-9]{3,}[\.|-|_]?)+@([a-z0-9]{3,}[\.|-|_]?)+(\.[a-z]{2,7})$/g,
+					email : /^([a-z0-9]{3,}[\.|\-|\_]?)+@([a-z0-9]{3,}[\.|\-|\_]?)+(\.[a-z]{2,7})$/g,
 					password : /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/g,
 					date : /^\d{1,4}\W?\w{1,3}\W?\d{1,4}$/g,
 					time : /^[am|pm]*\s*([0-2]?[0-9]):([0-5][0-9])\s*[am|pm]*$/gi,
