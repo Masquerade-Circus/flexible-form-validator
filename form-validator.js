@@ -40,7 +40,7 @@
 				onChange : untruth, // Validate field on key up. Defaults to false.
 				onSubmit : truth // Validate and prevent on submit. Defaults to true.
 			}, o);
-			
+
 		return (function(){
 			var form = $(this),
 				ths = this,
@@ -64,19 +64,18 @@
 						},
 						msg = obj.name + ' ',
 						val = field.element.val();
-						
 
 						if (field.element.length > 0) {
 							if ((field.required == true || field.required == 'required') && (val == null || val.length <= 0)) {
 								obj.attribute = 'required';
-								obj.msg = field.requiredError || msg + options.lang.required;
+								obj.msg = msg + (field.requiredError || options.lang.required);
 								field.error.call(field, obj);
 								errorMsgs.push(obj);
 								return errorMsgs;
 							}
 							if (field.match !== untruth && val.search(field.match) == -1) {
 								obj.attribute = 'match';
-								obj.msg = field.matchError || msg + options.lang.match;
+								obj.msg = msg + (field.matchError || options.lang.match);
 								field.error.call(field, obj);
 								errorMsgs.push(obj);
 								return errorMsgs;
@@ -84,7 +83,7 @@
 							if (sameAs.length > 0 && field.element.val() != sameAs.val()) {
 								obj.attribute = 'sameAs';
 								obj.sameAs = ths.fields[field.sameAs].name || field.sameAs;
-								obj.msg = field.sameAsError || msg + options.lang.sameAs + ' ' + obj.sameAs;
+								obj.msg = msg + (field.sameAsError || options.lang.sameAs + ' ' + obj.sameAs);
 								field.error.call(field, obj);
 								errorMsgs.push(obj);
 								return errorMsgs;
@@ -93,15 +92,15 @@
 						}
 						return errorMsgs;
 				};
-			
+
 			ths.fields = {};
-			
+
 			ths.validate = function(key) {
 				var errorMsgs = [],
 				i;
 				if (key != undefinedvar)
 					id = key.attr ? key.attr('id') : key, errorMsgs = validateField(errorMsgs, '#'+id);
-				else 
+				else
 					for (i in ths.fields)
 						errorMsgs = validateField(errorMsgs,i);
 
@@ -109,7 +108,7 @@
 
 				return errorMsgs.length === 0;
 			};
-			
+
 			(function(){
 				form.find('input, select, textarea').each(function () {
 					var element = $(this),
@@ -123,8 +122,8 @@
 							name : element.attr('title') || element.siblings('label').text() || element.attr('placeholder') || ' id: ' + id,
 							element : form.find(element),
 							matchError : element.data('matcherror') || options.lang.types[type],
-							requiredError : element.data('requirederror'),
-							sameAsError : element.data('sameaserror')
+							requiredError : element.data('requirederror') || options.lang.required,
+							sameAsError : element.data('sameaserror') || options.lang.sameAs
 						},
 						pattern = element.attr('pattern') || untruth;
 
@@ -132,25 +131,33 @@
 						o.match = pattern;
 
 					ths.fields[o.selector] = o;
-					
+
 					element.on('blur keyup change', function(e){
 						if (e.type == 'blur' && options.onBlur)
 							ths.validate(id.substr(1));
-						
+
 						if (e.type == 'keyup' && options.onKeyup)
 							ths.validate(id.substr(1));
-						
+
 						if (e.type == 'change' && options.onChange)
 							ths.validate(id.substr(1));
 					});
-					
+
 				});
 
 				for (i in options.validations) {
-					options.validations[i].element = form.find(options.validations[i].selector);
+					var element = options.validations[i].element = form.find(options.validations[i].selector);
 					if (options.validations[i].element.length > 0) {
-						options.validations[i].type = options.validations[i].type || options.validations[i].element.data('type') || options.validations[i].element.attr('type') || 'text';
-						ths.fields[options.validations[i].selector] = options.validations[i];
+						var type = options.validations[i].type || element.data('type') || element.attr('type') || 'text';
+						ths.fields[options.validations[i].selector] = $.extend({
+							required : element.attr('required') || untruth,
+							sameAs : element.data('sameas') || untruth,
+							match : options.types[type] || untruth,
+							name : element.attr('title') || element.siblings('label').text() || element.attr('placeholder') || ' id: ' + id,
+							matchError : element.data('matcherror') || options.lang.types[type],
+							requiredError : element.data('requirederror') || options.lang.required,
+							sameAsError : element.data('sameaserror') || options.lang.sameAs
+						}, options.validations[i]);
 					}
 				}
 
