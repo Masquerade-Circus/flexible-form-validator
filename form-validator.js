@@ -73,9 +73,15 @@
  						val = field.element.val();
 
  						if (field.element.length > 0) {
+							// TODO: refactor
 							if ((field.required == true || field.required == 'required')){
+								var radioCheck = /(radio|checkbox)/ig.test(field.type);
+
+								if (radioCheck)
+									var selector = field.element.attr('name') != undefinedvar ? 'input[name="'+field.element.attr('name')+'"]' : field.selector;
+
 								if(
-									((field.type == 'radio' || field.type == 'checkbox') && $(field.selector+':checked').length == 0) ||
+									(radioCheck && $(selector+':checked').length == 0) ||
 									(val == null || val.length <= 0)
 								) {
 										obj.attribute = 'required';
@@ -85,13 +91,6 @@
 		 								return errorMsgs;
 								}
 							}
- 							if ((field.required == true || field.required == 'required') && (val == null || val.length <= 0)) {
- 								obj.attribute = 'required';
- 								obj.msg = msg + (field.requiredError || options.lang.required);
- 								field.error.call(field, obj);
- 								errorMsgs.push(obj);
- 								return errorMsgs;
- 							}
  							if (field.match !== untruth && val.search(field.match) == -1) {
  								obj.attribute = 'match';
  								obj.msg = msg + (field.matchError || options.lang.match);
@@ -186,8 +185,6 @@
  						}, options.validations[i]);
  					}
  				}
-
-				console.log(ths.fields);
 
  				if (options.onSubmit)
  					form.on('submit', function () {
