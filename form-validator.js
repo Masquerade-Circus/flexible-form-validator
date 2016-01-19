@@ -73,6 +73,18 @@
  						val = field.element.val();
 
  						if (field.element.length > 0) {
+							if ((field.required == true || field.required == 'required')){
+								if(
+									((field.type == 'radio' || field.type == 'checkbox') && $(field.selector+':checked').length == 0) ||
+									(val == null || val.length <= 0)
+								) {
+										obj.attribute = 'required';
+		 								obj.msg = msg + (field.requiredError || options.lang.required);
+		 								field.error.call(field, obj);
+		 								errorMsgs.push(obj);
+		 								return errorMsgs;
+								}
+							}
  							if ((field.required == true || field.required == 'required') && (val == null || val.length <= 0)) {
  								obj.attribute = 'required';
  								obj.msg = msg + (field.requiredError || options.lang.required);
@@ -127,6 +139,7 @@
  						o = {
  							selector : id,
  							required : element.attr('required') || untruth,
+							type : type,
  							sameAs : element.data('sameas') || untruth,
  							match : options.types[type] || untruth,
  							name : element.attr('title') || element.siblings('label').text() || element.attr('placeholder') || ' id: ' + id,
@@ -173,6 +186,8 @@
  						}, options.validations[i]);
  					}
  				}
+
+				console.log(ths.fields);
 
  				if (options.onSubmit)
  					form.on('submit', function () {
